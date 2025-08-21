@@ -37,6 +37,7 @@ class _SignInScreenState extends StateX<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.red,
       appBar: const CustomAppBarWidget.detailsScreen(),
       resizeToAvoidBottomInset: true,
       body: LoadingScreen(

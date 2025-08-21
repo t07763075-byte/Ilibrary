@@ -64,6 +64,7 @@ class SignInController extends StateXController {
 
   void _onLogin(UserModel userModel) async{
     await SharedPref.saveCurrentUser(user: userModel);
+    ToastHelper.showSuccess(message: "login success");
     currentContext_!.goNamed(HomeScreen.routeName,);
   }
 }
