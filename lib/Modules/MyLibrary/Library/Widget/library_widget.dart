@@ -16,6 +16,7 @@ import '../../../Book/ReadBook/read_book_screen.dart';
 import '../library_controller.dart';
 
 class LibraryWidget extends StatelessWidget {
+// ignore_for_file: prefer_const_constructors
   final Function(LibraryType) onSelectMenu;
   final LibraryFilterType selectedFilter;
   final BookModel book;
@@ -221,6 +222,7 @@ class LibraryWidget extends StatelessWidget {
             Padding(
                 padding: EdgeInsets.only(top: 14.h),
                 child: InkWell(
+                      key: const Key('bookmark_delete_icon'),
                     onTap: () => LibraryController().deleteBookMark(book),
                     child: SvgPicture.asset(
                       Assets.imagesBookmarkBoldIc,
