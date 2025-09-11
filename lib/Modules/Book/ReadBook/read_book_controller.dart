@@ -316,15 +316,17 @@ class ReadBookController extends StateXController {
   }
 
   Widget getContextMenuWidget(int pageIndex) {
-    return BookDialogActionsWidget(
+  return Builder(
+    builder: (context) => BookDialogActionsWidget(
       showWordDefinition: !getSelectedText(pageIndex).contains(" "),
       onHighlight: (color) => onHighlight(color: color, pageIndex: pageIndex),
-      onAddNote: () => onAddNote(pageIndex: pageIndex),
+      onAddNote: (Offset position) => onAddNote(pageIndex: pageIndex, position: position),
       onTranslate: () => onTranslate(pageIndex: pageIndex),
       onExplain: () => explainLanguage(pageIndex: pageIndex),
       onDefinition: () => onDefinition(pageIndex: pageIndex),
-    );
-  }
+    ),
+  );
+}
 
   Future onHighlight({required String color, required int pageIndex}) async {
     BookHighlightModel? oldHighlightModel =
@@ -382,35 +384,36 @@ class ReadBookController extends StateXController {
     );
   }
 
-  Future onAddNote({required int pageIndex}) async {
-    String selectedText = getSelectedText(pageIndex);
-    TextSelection textSelection = quillControllers[pageIndex].selection;
-    BottomSheetHelper.bottomSheet(
-      context: currentContext_!,
-      widget: TakeNoteWidget(
-        onSave: (note) async {
-          int noteIndex = textSelection.start + selectedText.lastIndexOf(" ");
-          BookNoteModel noteModel = BookNoteModel(
-            localActionType: LocalActionType.add,
-            bookId: bookId,
-            page: pageIndex,
-            noteIndex: noteIndex,
-            selection: textSelection,
-            title: selectedText,
-            info: note,
-            date: DateTime.now(),
-          );
-          final result = await readBookDataHandlerManage.addNote(noteModel: noteModel,);
-          result.fold((l) => ToastHelper.showError(message: l.message), (r) {
-            ElegantNotificationHelper.show(message: Strings.noteSuccessfully.tr);
-            notesList.insert(0, r);
-            addNoteToSelection(r);
-          });
-          setState(() {});
-        },
-      ),
-    );
-  }
+  Future onAddNote({required int pageIndex, required Offset position}) async {
+  String selectedText = getSelectedText(pageIndex);
+  TextSelection textSelection = quillControllers[pageIndex].selection;
+  DialogHelper.custom(currentContext_!).customDialogPosition(
+    top: position.dy,
+    left: position.dx,
+    dialogWidget: TakeNoteWidget(
+      onSave: (note) async {
+        int noteIndex = textSelection.start + selectedText.lastIndexOf(" ");
+        BookNoteModel noteModel = BookNoteModel(
+          localActionType: LocalActionType.add,
+          bookId: bookId,
+          page: pageIndex,
+          noteIndex: noteIndex,
+          selection: textSelection,
+          title: selectedText,
+          info: note,
+          date: DateTime.now(),
+        );
+        final result = await readBookDataHandlerManage.addNote(noteModel: noteModel,);
+        result.fold((l) => ToastHelper.showError(message: l.message), (r) {
+          ElegantNotificationHelper.show(message: Strings.noteSuccessfully.tr);
+          notesList.insert(0, r);
+          addNoteToSelection(r);
+        });
+        setState(() {});
+      },
+    ),
+  );
+}
 
   void addNoteToSelection(BookNoteModel note) {
     quillControllers[note.page!]
