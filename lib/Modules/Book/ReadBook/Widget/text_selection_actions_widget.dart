@@ -10,7 +10,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 
 class BookDialogActionsWidget extends StatefulWidget {
-  final Function() onAddNote,onTranslate,onExplain,onDefinition;
+  final void Function(Offset)? onAddNote;
+final Function() onTranslate,onExplain,onDefinition;
   final Function(String) onHighlight;
   final bool showWordDefinition;
   const BookDialogActionsWidget({super.key, required this.onHighlight, required this.onAddNote, required this.onTranslate, required this.onExplain, required this.showWordDefinition, required this.onDefinition});
@@ -58,7 +59,14 @@ class _BookDialogActionsWidgetState extends State<BookDialogActionsWidget> {
               )).toList(),
 
             Gap(16.w),
-            InkWell(onTap: widget.onAddNote,child: SvgPicture.asset(Assets.imagesNote)),
+            InkWell(
+  onTap: () {
+    final RenderBox box = context.findRenderObject() as RenderBox;
+    final Offset position = box.localToGlobal(Offset.zero);
+    widget.onAddNote?.call(position);
+  },
+  child: SvgPicture.asset(Assets.imagesNote),
+),
             if(deviceHaveInternet) Gap(16.w),
             if(deviceHaveInternet) InkWell(onTap: widget.onTranslate,child: SvgPicture.asset(Assets.imagesTranslate)),
             if(deviceHaveInternet) Gap(16.w),
